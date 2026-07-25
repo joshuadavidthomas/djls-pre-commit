@@ -1,0 +1,23 @@
+name: test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  hook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      - name: Create a discoverable Django environment
+        run: |
+          uv venv
+          uv pip install --python .venv/bin/python "django>=5.2,<5.3"
+      - name: Run the local hook
+        run: uvx --from pre-commit pre-commit try-repo . djls-check --all-files

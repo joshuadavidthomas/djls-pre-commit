@@ -1,0 +1,7 @@
+- id: djls-check
+  name: djls check
+  description: Check Django templates with django-language-server.
+  entry: djls check
+  language: python
+  files: \.(?:djhtml|html?)$
+  require_serial: true
