@@ -34,7 +34,20 @@ jobs:
         name: Mirror published releases
         env:
           DJLS_VERSION: ${{ inputs.version }}
-        run: uv run --no-project --with packaging python mirror.py --github-output "$GITHUB_OUTPUT"
+        run: uv run --no-project --with "packaging==26.2" python mirror.py --github-output "$GITHUB_OUTPUT"
+      - name: Test mirrored releases
+        if: steps.mirror.outputs.tags != ''
+        env:
+          TAGS: ${{ steps.mirror.outputs.tags }}
+        run: |
+          uv venv --clear .venv
+          uv pip install --python .venv/bin/python "django>=5.2,<5.3"
+          for tag in $TAGS; do
+            git checkout "$tag"
+            uvx --from "pre-commit==4.6.1" pre-commit validate-manifest .pre-commit-hooks.yaml
+            uvx --from "pre-commit==4.6.1" pre-commit try-repo . djls-check --all-files
+          done
+          git checkout main
       - name: Push mirrored releases
         if: steps.mirror.outputs.tags != ''
         run: git push origin HEAD:main --follow-tags
