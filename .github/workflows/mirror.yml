@@ -1,0 +1,49 @@
+name: mirror
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: django-language-server version to mirror
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    if: github.repository == 'joshuadavidthomas/djls-pre-commit'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      - name: Configure commits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - id: mirror
+        name: Mirror published releases
+        env:
+          DJLS_VERSION: ${{ inputs.version }}
+        run: uv run --no-project --with packaging python mirror.py --github-output "$GITHUB_OUTPUT"
+      - name: Push mirrored releases
+        if: steps.mirror.outputs.tags != ''
+        run: git push origin HEAD:main --follow-tags
+      - name: Create GitHub releases
+        if: steps.mirror.outputs.tags != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAGS: ${{ steps.mirror.outputs.tags }}
+        run: |
+          for tag in $TAGS; do
+            gh release create "$tag" --title "$tag" --notes "Pins django-language-server ${tag#v} for the \`djls-check\` pre-commit hook."
+          done

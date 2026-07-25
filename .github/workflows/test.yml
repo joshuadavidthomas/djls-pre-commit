@@ -19,5 +19,7 @@ jobs:
         run: |
           uv venv
           uv pip install --python .venv/bin/python "django>=5.2,<5.3"
+      - name: Validate the hook manifest
+        run: uvx --from "pre-commit==4.6.1" pre-commit validate-manifest .pre-commit-hooks.yaml
       - name: Run the local hook
-        run: uvx --from pre-commit pre-commit try-repo . djls-check --all-files
+        run: uvx --from "pre-commit==4.6.1" pre-commit try-repo . djls-check --all-files
