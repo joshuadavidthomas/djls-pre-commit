@@ -1,4 +1,4 @@
-# django-language-server-pre-commit
+# djls-pre-commit
 
 [pre-commit](https://pre-commit.com/) and [prek](https://prek.j178.dev/) hooks for [django-language-server](https://github.com/joshuadavidthomas/django-language-server).
 
@@ -8,7 +8,7 @@ Add the hook to `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
-  - repo: https://github.com/joshuadavidthomas/django-language-server-pre-commit
+  - repo: https://github.com/joshuadavidthomas/djls-pre-commit
     rev: v6.0.3
     hooks:
       - id: djls-check
