@@ -9,7 +9,7 @@ Add the hook to `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/joshuadavidthomas/djls-pre-commit
-    rev: v6.1.0
+    rev: v6.1.1
     hooks:
       - id: djls-check
 ```

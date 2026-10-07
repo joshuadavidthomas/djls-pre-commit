@@ -3,5 +3,5 @@ name = "djls-pre-commit"
 version = "0.0.0"
 requires-python = ">=3.10"
 dependencies = [
-  "django-language-server==6.1.0",
+  "django-language-server==6.1.1",
 ]
